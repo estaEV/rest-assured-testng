@@ -79,6 +79,7 @@ public class StepDefinitionRestAssured implements GlobalVar {
     @Given("Get employee with ID {int} request is made")
 //    @Test(description = "GET a specific user")
     public void getASpecificUser(int arg0) {
+        String data = null;
         try {
             ValidatableResponse response = RestAssured
                     .given()
@@ -88,11 +89,13 @@ public class StepDefinitionRestAssured implements GlobalVar {
                     .then()
                         .spec(getManualResponseSpec())
                         .body("status", equalTo("success"))
-                        .body("data.id", equalTo(arg0))
+                        .body("data", notNullValue())
                         .body("message", equalTo("Successfully! Record has been fetched."))
                         .log().body();
 
-            if (response.extract().statusCode() >= 300) {
+            data = response.extract().path("data");
+
+            if (data == null) {
                 throw new NonExistingEmployeeException("That string is coming from utils.NonExistingEmployeeException \"throw new\" inside the try block.");
             }
         } catch (NonExistingEmployeeException e) {
@@ -115,6 +118,5 @@ public class StepDefinitionRestAssured implements GlobalVar {
                     .body("data.employee_name", hasItems("Doris Wilder", "Bradley Greer", "Tatyana Fitzpatrick"))
                     .log().body();
     }
-
 
 }
