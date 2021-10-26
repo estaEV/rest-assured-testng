@@ -94,7 +94,7 @@ public class StepDefinitionRestAssured implements GlobalVar {
                         .log().body();
 
             data = response.extract().path("data").toString();
-            if (data == null) {
+            if (data != null) {
                 throw new NonExistingEmployeeException("That string is coming from utils.NonExistingEmployeeException \"throw new\" inside the try block.");
             }
         } catch (NonExistingEmployeeException e) {
