@@ -93,8 +93,7 @@ public class StepDefinitionRestAssured implements GlobalVar {
                         .body("message", equalTo("Successfully! Record has been fetched."))
                         .log().body();
 
-            data = response.extract().path("data");
-
+            data = response.extract().path("data").toString();
             if (data == null) {
                 throw new NonExistingEmployeeException("That string is coming from utils.NonExistingEmployeeException \"throw new\" inside the try block.");
             }
@@ -119,4 +118,30 @@ public class StepDefinitionRestAssured implements GlobalVar {
                     .log().body();
     }
 
+    @Given("Request an update for employee with ID {int} request")
+    public void requestAnUpdateForEmployeeWithIDRequest(int arg0, DataTable data) {
+
+        List<List<String>> dataList = data.asLists(String.class);
+        StringBuilder body = new StringBuilder();
+        body.append("{\"name\":\"")
+                .append(dataList.get(0).get(0))
+                .append("\",\"salary\":\"")
+                .append(dataList.get(0).get(1))
+                .append("\",\"age\":\"")
+                .append(dataList.get(0).get(2))
+                .append("\"}");
+
+        ValidatableResponse response = RestAssured
+                .given()
+                .spec(getManualRequestSpec())
+                .body(body.toString())
+                .when()
+                .patch(GET_URL + UPDATE_URL + String.valueOf(arg0))
+                .then()
+                .spec(getManualResponseSpec())
+                .body("status", equalTo("success"))
+                .body("data", notNullValue())
+                .body("message", equalTo("Successfully! Record has been fetched."))
+                .log().body();
+    }
 }
